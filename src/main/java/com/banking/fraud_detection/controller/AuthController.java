@@ -26,6 +26,10 @@ public class AuthController {
         model.addAttribute("user", new User());
         return "register";
     }
+    @GetMapping("/")
+    public String home() {
+        return "redirect:/login";
+    }
 
     @PostMapping("/register")
     public String registerUser(
