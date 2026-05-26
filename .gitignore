@@ -12,7 +12,7 @@ target/
 .factorypath
 
 # Application properties with passwords
-src/main/resources/application.properties
+
 
 # Logs
 *.log
