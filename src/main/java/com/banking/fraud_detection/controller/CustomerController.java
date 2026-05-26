@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import com.banking.fraud_detection.entity.Transaction;
+import com.banking.fraud_detection.entity.TransactionStatus;
+import java.util.List;
 
 @Controller
 @RequestMapping("/customer")
@@ -32,9 +35,31 @@ public class CustomerController {
     public String dashboard(Authentication authentication,
             Model model) {
         User user = getCurrentUser(authentication);
+        List<Transaction> transactions =
+            transactionService.getTransactionsByUser(user);
+
+        long totalCount = transactions.size();
+        long pendingCount = transactions.stream()
+            .filter(t -> t.getStatus() ==
+                TransactionStatus.PENDING)
+            .count();
+        long approvedCount = transactions.stream()
+            .filter(t -> t.getStatus() ==
+                TransactionStatus.APPROVED)
+            .count();
+        long flaggedCount = transactions.stream()
+            .filter(t -> t.getStatus() ==
+                TransactionStatus.FLAGGED ||
+                t.getStatus() ==
+                TransactionStatus.BLOCKED)
+            .count();
+
         model.addAttribute("user", user);
-        model.addAttribute("transactions",
-            transactionService.getTransactionsByUser(user));
+        model.addAttribute("transactions", transactions);
+        model.addAttribute("totalCount", totalCount);
+        model.addAttribute("pendingCount", pendingCount);
+        model.addAttribute("approvedCount", approvedCount);
+        model.addAttribute("flaggedCount", flaggedCount);
         return "customer/dashboard";
     }
 

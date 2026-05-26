@@ -8,39 +8,57 @@
 <body>
 <nav class="navbar navbar-dark" style="background-color: #1a237e;">
     <div class="container">
-        <span class="navbar-brand">Enterprise Fraud Detection Portal</span>
-        <form th:action="@{/logout}" method="post" style="display:inline">
-    <button type="submit" class="btn btn-outline-light btn-sm">Logout</button>
-</form>
+        <span class="navbar-brand">
+            Enterprise Fraud Detection Portal
+        </span>
+        <form th:action="@{/logout}" method="post"
+              style="display:inline">
+            <button type="submit"
+                    class="btn btn-outline-light btn-sm">
+                Logout
+            </button>
+        </form>
     </div>
 </nav>
 
 <div class="container mt-4">
-    <h2>Welcome!</h2>
+    <h2>Welcome, <span th:text="${user.fullName}">Customer</span>!</h2>
     <p class="text-muted">You are logged in as Customer</p>
 
     <div class="row mt-4">
-        <div class="col-md-4">
+        <div class="col-md-3">
             <div class="card text-white bg-primary">
                 <div class="card-body">
-                    <h5 class="card-title">My Transactions</h5>
-                    <h2>0</h2>
+                    <h5 class="card-title">
+                        My Transactions
+                    </h5>
+                    <h2 th:text="${totalCount}">0</h2>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
             <div class="card text-white bg-warning">
                 <div class="card-body">
                     <h5 class="card-title">Pending</h5>
-                    <h2>0</h2>
+                    <h2 th:text="${pendingCount}">0</h2>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
             <div class="card text-white bg-success">
                 <div class="card-body">
                     <h5 class="card-title">Approved</h5>
-                    <h2>0</h2>
+                    <h2 th:text="${approvedCount}">0</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-danger">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        Flagged/Blocked
+                    </h5>
+                    <h2 th:text="${flaggedCount}">0</h2>
                 </div>
             </div>
         </div>
@@ -48,15 +66,57 @@
 
     <div class="row mt-4">
         <div class="col-md-4">
-            <a href="/customer/transaction/new"class="btn btn-primary w-100">
+            <a href="/customer/transaction/new"
+               class="btn btn-primary w-100">
                 New Transaction
             </a>
         </div>
         <div class="col-md-4">
-            <a href="/customer/transaction/history"class="btn btn-outline-primary w-100">
+            <a href="/customer/transaction/history"
+               class="btn btn-outline-primary w-100">
                 Transaction History
             </a>
         </div>
+    </div>
+
+    <div class="mt-5">
+        <h5>Recent Transactions</h5>
+        <table class="table table-bordered table-hover mt-2">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Receiver Account</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Risk Score</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="tx : ${transactions}"
+                    th:if="${txStat.index < 5}">
+                    <td th:text="${tx.id}"></td>
+                    <td th:text="${tx.receiverAccount}"></td>
+                    <td th:text="'₹' + ${tx.amount}"></td>
+                    <td>
+                        <span th:text="${tx.status}"
+                              th:class="${tx.status.name() == 'APPROVED'} ? 'badge bg-success' :
+                                        (${tx.status.name() == 'PENDING'} ? 'badge bg-warning' :
+                                        (${tx.status.name() == 'FLAGGED'} ? 'badge bg-danger' :
+                                        (${tx.status.name() == 'BLOCKED'} ? 'badge bg-dark' :
+                                        'badge bg-info')))">
+                        </span>
+                    </td>
+                    <td th:text="${tx.riskScore}"></td>
+                    <td th:text="${#temporals.format(tx.createdAt, 'dd-MM-yyyy HH:mm')}"></td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(transactions)}">
+                    <td colspan="6" class="text-center text-muted">
+                        No transactions yet
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </div>
 </body>
