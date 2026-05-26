@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-dark" style="background-color: #1a237e;">
+    <div class="container">
+        <span class="navbar-brand">Enterprise Fraud Detection Portal</span>
+        <div>
+            <a href="/admin/users" class="btn btn-outline-light btn-sm me-2">Manage Users</a>
+            <a href="/admin/transactions" class="btn btn-outline-light btn-sm me-2">Transactions</a>
+            <form th:action="@{/logout}" method="post" style="display:inline">
+    <button type="submit" class="btn btn-outline-light btn-sm">Logout</button>
+</form>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <h2>Admin Dashboard</h2>
+    <p class="text-muted">Enterprise Fraud Detection Portal</p>
+
+    <div class="row mt-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary">
+                <div class="card-body">
+                    <h5 class="card-title">Active Users</h5>
+                    <h2 th:text="${activeCount}">0</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-warning">
+                <div class="card-body">
+                    <h5 class="card-title">Pending Approvals</h5>
+                    <h2 th:text="${pendingCount}">0</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-danger">
+                <div class="card-body">
+                    <h5 class="card-title">Flagged Transactions</h5>
+                    <h2 th:text="${flaggedCount}">0</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <h5 class="card-title">Pending Transactions</h5>
+                    <h2 th:text="${pendingTxCount}">0</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-3">
+            <a href="/admin/users"
+               class="btn btn-primary w-100">
+                Manage Users
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="/admin/transactions"
+               class="btn btn-danger w-100">
+                Review Transactions
+            </a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

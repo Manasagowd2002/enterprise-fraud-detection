@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Transaction History</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-dark" style="background-color: #1a237e;">
+    <div class="container">
+        <span class="navbar-brand">Enterprise Fraud Detection Portal</span>
+        <div>
+            <a href="/customer/dashboard" class="btn btn-outline-light btn-sm me-2">Dashboard</a>
+            <a href="/customer/transaction/new" class="btn btn-outline-light btn-sm me-2">New Transaction</a>
+            <a href="/logout" class="btn btn-outline-light btn-sm">Logout</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <h3>My Transaction History</h3>
+
+    <table class="table table-bordered table-hover mt-3">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Receiver Account</th>
+                <th>Receiver Name</th>
+                <th>Amount</th>
+                <th>Description</th>
+                <th>Status</th>
+                <th>Risk Score</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="tx : ${transactions}">
+                <td th:text="${tx.id}"></td>
+                <td th:text="${tx.receiverAccount}"></td>
+                <td th:text="${tx.receiverName}"></td>
+                <td th:text="'₹' + ${tx.amount}"></td>
+                <td th:text="${tx.description}"></td>
+                <td>
+                    <span th:text="${tx.status}"
+                          th:class="${tx.status.name() == 'APPROVED'} ? 'badge bg-success' :
+                                    (${tx.status.name() == 'PENDING'} ? 'badge bg-warning' :
+                                    (${tx.status.name() == 'FLAGGED'} ? 'badge bg-danger' :
+                                    (${tx.status.name() == 'BLOCKED'} ? 'badge bg-dark' :
+                                    'badge bg-info')))">
+                    </span>
+                </td>
+                <td th:text="${tx.riskScore}"></td>
+                <td th:text="${#temporals.format(tx.createdAt, 'dd-MM-yyyy HH:mm')}"></td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(transactions)}">
+                <td colspan="8" class="text-center text-muted">
+                    No transactions yet
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

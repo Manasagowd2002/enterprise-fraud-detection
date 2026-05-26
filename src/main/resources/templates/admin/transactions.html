@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Transaction Review</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-dark" style="background-color: #1a237e;">
+    <div class="container">
+        <span class="navbar-brand">Enterprise Fraud Detection Portal</span>
+        <div>
+            <a href="/admin/dashboard" class="btn btn-outline-light btn-sm me-2">Dashboard</a>
+            <a href="/admin/users" class="btn btn-outline-light btn-sm me-2">Users</a>
+            <a href="/logout" class="btn btn-outline-light btn-sm">Logout</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+
+    <div th:if="${success}"
+         class="alert alert-success"
+         th:text="${success}">
+    </div>
+
+    <h3>Flagged Transactions</h3>
+    <table class="table table-bordered table-hover mt-3">
+        <thead class="table-danger">
+            <tr>
+                <th>ID</th>
+                <th>Customer</th>
+                <th>Receiver Account</th>
+                <th>Amount</th>
+                <th>Risk Score</th>
+                <th>Flag Reason</th>
+                <th>Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="tx : ${flaggedTransactions}">
+                <td th:text="${tx.id}"></td>
+                <td th:text="${tx.sender.fullName}"></td>
+                <td th:text="${tx.receiverAccount}"></td>
+                <td th:text="'Rs.' + ${tx.amount}"></td>
+                <td>
+                    <span class="badge bg-danger"
+                          th:text="${tx.riskScore}">
+                    </span>
+                </td>
+                <td th:text="${tx.flagReason}"></td>
+                <td th:text="${#temporals.format(tx.createdAt, 'dd-MM-yyyy HH:mm')}"></td>
+                <td>
+                    <form th:action="@{/admin/transactions/approve/{id}(id=${tx.id})}"
+                          method="post" style="display:inline">
+                        <button type="submit"
+                                class="btn btn-success btn-sm">
+                            Approve
+                        </button>
+                    </form>
+                    <form th:action="@{/admin/transactions/reject/{id}(id=${tx.id})}"
+                          method="post" style="display:inline">
+                        <button type="submit"
+                                class="btn btn-danger btn-sm">
+                            Block
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(flaggedTransactions)}">
+                <td colspan="8" class="text-center text-muted">
+                    No flagged transactions
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3 class="mt-5">Under Review Transactions</h3>
+    <table class="table table-bordered table-hover mt-3">
+        <thead class="table-info">
+            <tr>
+                <th>ID</th>
+                <th>Customer</th>
+                <th>Receiver Account</th>
+                <th>Amount</th>
+                <th>Risk Score</th>
+                <th>Flag Reason</th>
+                <th>Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="tx : ${underReviewTransactions}">
+                <td th:text="${tx.id}"></td>
+                <td th:text="${tx.sender.fullName}"></td>
+                <td th:text="${tx.receiverAccount}"></td>
+                <td th:text="'Rs.' + ${tx.amount}"></td>
+                <td>
+                    <span class="badge bg-info"
+                          th:text="${tx.riskScore}">
+                    </span>
+                </td>
+                <td th:text="${tx.flagReason}"></td>
+                <td th:text="${#temporals.format(tx.createdAt, 'dd-MM-yyyy HH:mm')}"></td>
+                <td>
+                    <form th:action="@{/admin/transactions/approve/{id}(id=${tx.id})}"
+                          method="post" style="display:inline">
+                        <button type="submit"
+                                class="btn btn-success btn-sm">
+                            Approve
+                        </button>
+                    </form>
+                    <form th:action="@{/admin/transactions/reject/{id}(id=${tx.id})}"
+                          method="post" style="display:inline">
+                        <button type="submit"
+                                class="btn btn-danger btn-sm">
+                            Block
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(underReviewTransactions)}">
+                <td colspan="8" class="text-center text-muted">
+                    No transactions under review
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3 class="mt-5">All Transactions</h3>
+    <table class="table table-bordered table-hover mt-3">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Customer</th>
+                <th>Receiver Account</th>
+                <th>Receiver Name</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Risk Score</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="tx : ${allTransactions}">
+                <td th:text="${tx.id}"></td>
+                <td th:text="${tx.sender.fullName}"></td>
+                <td th:text="${tx.receiverAccount}"></td>
+                <td th:text="${tx.receiverName}"></td>
+                <td th:text="'Rs.' + ${tx.amount}"></td>
+                <td>
+                    <span th:text="${tx.status}"
+                          th:class="${tx.status.name() == 'APPROVED'} ? 'badge bg-success' :
+                                    (${tx.status.name() == 'PENDING'} ? 'badge bg-warning' :
+                                    (${tx.status.name() == 'FLAGGED'} ? 'badge bg-danger' :
+                                    (${tx.status.name() == 'BLOCKED'} ? 'badge bg-dark' :
+                                    'badge bg-info')))">
+                    </span>
+                </td>
+                <td th:text="${tx.riskScore}"></td>
+                <td th:text="${#temporals.format(tx.createdAt, 'dd-MM-yyyy HH:mm')}"></td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(allTransactions)}">
+                <td colspan="8" class="text-center text-muted">
+                    No transactions found
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

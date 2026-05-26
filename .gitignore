@@ -1,0 +1,23 @@
+# Maven
+target/
+*.class
+*.jar
+*.war
+
+# IDE files
+.eclipse
+.settings/
+.classpath
+.project
+.factorypath
+
+# Application properties with passwords
+src/main/resources/application.properties
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db 
