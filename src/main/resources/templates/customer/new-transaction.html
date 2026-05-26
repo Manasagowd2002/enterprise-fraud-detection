@@ -36,18 +36,30 @@
                           method="post">
 
                         <div class="mb-3">
-                            <label class="form-label">
+                            <label class="form-label fw-bold">
                                 Receiver Account Number
                             </label>
                             <input type="text"
                                    th:field="*{receiverAccount}"
                                    class="form-control"
-                                   placeholder="Enter account number"
+                                   id="receiverAccount"
+                                   placeholder="Enter Account Number (Example: ACT-2026-0001)"
+                                   maxlength="13"
+                                   onkeyup="validateAccountNumber()"
+                                   oninput="this.value = this.value.toUpperCase()"
                                    required>
+                            <div id="accountError"
+                                 class="invalid-feedback"
+                                 style="display:none">
+                            </div>
+                            <small class="text-muted">
+                                Format: ACT-YYYY-XXXX
+                                (Example: ACT-2026-0001)
+                            </small>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">
+                            <label class="form-label fw-bold">
                                 Receiver Name
                             </label>
                             <input type="text"
@@ -58,7 +70,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">
+                            <label class="form-label fw-bold">
                                 Amount (₹)
                             </label>
                             <input type="number"
@@ -71,7 +83,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">
+                            <label class="form-label fw-bold">
                                 Description (optional)
                             </label>
                             <textarea th:field="*{description}"
@@ -81,8 +93,9 @@
                             </textarea>
                         </div>
 
-                        <button type="submit"
-                                class="btn btn-primary w-100">
+                        <button type="button"
+                                class="btn btn-primary w-100"
+                                onclick="validateAndSubmitTransaction()">
                             Submit Transaction
                         </button>
                     </form>
@@ -91,5 +104,68 @@
         </div>
     </div>
 </div>
+
+<script>
+function validateAccountNumber() {
+    const account = document.getElementById(
+        'receiverAccount').value.trim();
+    const error = document.getElementById('accountError');
+    const currentYear = new Date().getFullYear();
+    const pattern = new RegExp(
+        '^ACT-' + currentYear + '-\\d{4}$');
+
+    if (account.length === 0) {
+        error.textContent = 'Account number is required';
+        error.style.display = 'block';
+        return false;
+    }
+
+    if (account !== account.toUpperCase()) {
+        error.textContent =
+            'Use uppercase only. Example: ACT-2026-0001';
+        error.style.display = 'block';
+        return false;
+    }
+
+    if (!pattern.test(account)) {
+        error.textContent =
+            'Account number must be in format ACT-' +
+            currentYear +
+            '-XXXX. Example: ACT-2026-0001';
+        error.style.display = 'block';
+        return false;
+    }
+
+    error.style.display = 'none';
+    return true;
+}
+
+function validateAndSubmitTransaction() {
+    let valid = true;
+
+    if (!validateAccountNumber()) {
+        valid = false;
+    }
+
+    const receiverName = document.querySelector(
+        '[name="receiverName"]').value.trim();
+    const amount = document.querySelector(
+        '[name="amount"]').value;
+
+    if (receiverName.length < 2) {
+        alert('Please enter receiver name');
+        valid = false;
+    }
+
+    if (!amount || parseFloat(amount) <= 0) {
+        alert('Please enter a valid amount');
+        valid = false;
+    }
+
+    if (valid) {
+        document.querySelector('form').submit();
+    }
+}
+</script>
 </body>
 </html>
